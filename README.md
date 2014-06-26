@@ -18,10 +18,10 @@ Instructions to make a Gource Screen Saver:
 12) Dropdown Menu -> "Settings"  
 13) Enter desiered settings  
 14) Connect "Gource Screensaver" "Image" output to "Image" input on billboard  
-	14a) To Test Settings Click "Viewer"  
-	14b) Click "Run"  
-	14c) (Make sure everything runs)  
-	14d) Click "Stop"  
-	14)e Rinse and repeat till it works  
+    14a) To Test Settings Click "Viewer"  
+    14b) Click "Run"  
+    14c) (Make sure everything runs)  
+    14d) Click "Stop"  
+    14)e Rinse and repeat till it works  
 15) "File" -> "Save" -> ~/Library/Screen Savers/  
 16) Open "System Preferences", choose your gource screen saver and enjoy!  
