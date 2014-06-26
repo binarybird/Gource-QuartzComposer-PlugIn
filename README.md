@@ -8,6 +8,7 @@ Started a project to get Gource to run as a screen saver on Mac OSX - the easies
 You can use this same technique to get/record any window in Mac OSX through Quartz Composer  
   
 Instructions to make a Gource Screen Saver:  
+
 1. Build  
 2. Gource.plugin -> /Library/Graphics/Quartz Composer Plug-Ins/  
 3. Open "Quartz Composer.app"  
