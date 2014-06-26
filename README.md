@@ -6,6 +6,8 @@ Gource Quartz Composer Plugin for Mac OSX
 Started a project to get Gource to run as a screen saver on Mac OSX - the easiest way to do that is through Quartz Composer included with Apple's XCode Tools  
   
 You can use this same technique to get/record any window in Mac OSX through Quartz Composer  
+
+This plugin is still a bit buggy (WIP), its alpha quality at best
   
 Instructions to make a Gource Screen Saver:  
 
