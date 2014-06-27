@@ -1,5 +1,6 @@
 #import <OpenGL/CGLMacro.h>
 #import <ApplicationServices/ApplicationServices.h>
+
 #import "GourcePlugIn.h"
 #import "ArgumentKeys.h"
 
@@ -12,7 +13,8 @@
 @synthesize gourceLocation,gitLocation,gourceArguments;
 
 //CGEventRef myCGEventCallback(CGEventTapProxy proxy, CGEventType type,  CGEventRef event, void *refcon) {
-//    
+//
+//    CGEventTapInformation -> use to block events from pid of gource (sending 300 wakeup calls/s)
 //    CGKeyCode keycode = (CGKeyCode)CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode);
 //    
 //    NSLog(@"TYPE: %u\n KEYCODE: %u\n", (uint32_t)type,(uint32_t)keycode);
@@ -32,6 +34,7 @@
 - (id) init
 {
 	if(self = [super init]) {
+        NSLog(@"starting up gource quartz plugin...");
 
 //        CFMachPortRef eventTap;
 //        CFRunLoopSourceRef runLoopSource;
@@ -40,7 +43,6 @@
 //        runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, eventTap, 0);
 //        CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, kCFRunLoopCommonModes);
 //        CGEventTapEnable(eventTap, true);
-
         
         [self addObserver:self forKeyPath:@"gourceLocation" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:NULL];
         [self addObserver:self forKeyPath:@"gitLocation" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:NULL];
@@ -68,14 +70,6 @@
         pid=0;
 	}
 	return self;
-}
-
--(void)dealloc{
-    NSLog(@"SHUTTING DOWN...");
-    
-    [self removeObserver:self forKeyPath:@"gourceLocation"];
-    [self removeObserver:self forKeyPath:@"gitLocation"];
-    
 }
 
 + (NSDictionary*) attributes
@@ -114,6 +108,19 @@
 	return kQCPlugInTimeModeIdle;
 }
 
+-(void)dealloc{
+    /*
+     * TODO
+     * added observers in the init
+     * dealloc never gets called in ARC
+     * there is no applicationWillTerminate: in a plugin, thats the AppKit framework :(
+     *
+     * need to find some way to get rid of the observers when the plugin is unloaded!
+     */
+    
+//    [self removeObserver:self forKeyPath:@"gourceLocation"];
+//    [self removeObserver:self forKeyPath:@"gitLocation"];
+}
 
 @end
 
@@ -147,6 +154,7 @@ static void _TextureReleaseCallback(CGLContextObj cgl_ctx, GLuint name, void* co
             NSArray* args = [gourceArguments componentsSeparatedByString:@","];
             if([args count] > 0 && [gourceArguments length] > 0)
                 [gource setArguments:args];
+            NSLog(@"launching gource with args: %@",args);
             
             [gource setLaunchPath:gourceLocation];
             [gource setCurrentDirectoryPath:gitLocation];
@@ -253,6 +261,8 @@ static void _TextureReleaseCallback(CGLContextObj cgl_ctx, GLuint name, void* co
 
 - (void)stopExecution:(id<QCPlugInContext>)context
 {
+    NSLog(@"shutting down gource quartz plugin...");
+    
     NSUserDefaults *standardUserDefaults = [[NSUserDefaults alloc] init];
     [standardUserDefaults setObject:gourceLocation forKey:@"gourceLocation"];
     [standardUserDefaults setObject:gitLocation forKey:@"gitLocation"];
@@ -265,6 +275,8 @@ static void _TextureReleaseCallback(CGLContextObj cgl_ctx, GLuint name, void* co
     system([[NSString stringWithFormat:@"kill -9 %i",pid] UTF8String]);
     
     gource = nil;
+    
+    canExecute = YES;
     
     winID = 0;
     pid = 0;
